@@ -1,22 +1,22 @@
 <template>
     <div>
-        <input v-model="name" @change="changeName" />
-        <div v-show="$validator.name.error">错误的</div>
-        <div v-show="$validator.name.success">正确的</div>
-        <div v-show="$validator.name.error">{{$validator.name.message}}</div>
+        <input v-model="title" @change="changeName" />
+        <div v-show="$validator.title.error">错误的</div>
+        <div v-show="$validator.title.success">正确的</div>
+        <div v-show="$validator.title.error">{{$validator.title.message}}</div>
     </div>
 </template>
 <script>
     export default {
         data(){
             return {
-                name:'Bingo Yang'
+                title:'Bingo Yang'
+
             }
         },
         methods:{
             changeName(ev){
-                console.log(this.name);
-                this.$validator.validate('name',this.name);
+                this.$validator.validate('title',this.title);
             }
         }
     }

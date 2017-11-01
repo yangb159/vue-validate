@@ -15,10 +15,11 @@ export class Validator {
 
         this._rule = Object.create(null);
         this._message = Object.create(null);
-        this._watcherVM = new Vue();
+        this._subscribers = [];
+
 
         const {rule, message} = opts;
-
+        const validator = this;
         if (!isEmptyObj(rule)) {
             this._rule = rule;
             // get default message and mixin user's message
@@ -32,13 +33,21 @@ export class Validator {
             this._message = _message;
 
             // add result for rules
-            const validator = this;
-            const {validate, validateAll} = this;
             forEachValue(rule, function (value, key) {
                 validator[key] = {error: false, success: false, message: ''};
             });
+
+            //bind instance of vue to be reactive
+            this._watcherVM = new Vue({data:{$$validator:validator}});
         }
+        const {validate, validateAll} = this;
+
+        this.validate = function boundValidate(key,val) {
+            return validate.call(validator,key,val)
+        };
+
     }
+
 
     validate(key, val) {
         const rule = this._rule ? this._rule[key] : {};
@@ -51,7 +60,7 @@ export class Validator {
             let {maxLength = 1, minLength = 1} = rule;
             re = RangeLength(val, key, minLength, maxLength, this);
         }
-
+        const validator = this;
 
     }
 
@@ -61,6 +70,10 @@ export class Validator {
 
     config(key, value) {
 
+    }
+
+    subscribe (fn) {
+        return genericSubscribe(fn, this._subscribers)
     }
 
 }
@@ -82,6 +95,7 @@ function getDefaultMessage(opts) {
     };
     return Object.assign({}, _defaultMessage, defaultMessage)
 }
+
 
 export function install(_Vue) {
     if (Vue && _Vue === Vue) {

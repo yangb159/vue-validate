@@ -35,8 +35,14 @@ export function toNumber(value) {
 }
 export function setStatus(Validator, key, Boolean = true, msg = null) {
     if (Validator.hasOwnProperty(key)) {
+        // Vue.set(Validator,key,{error:!Boolean,success:Boolean,message:Boolean ? '' : msg});
+        // Vue.set(Validator,key,{success:Boolean});
+        // Vue.set(Validator,key,{message:Boolean ? '' : msg});
+        // Vue.set(Validator[key],'error',!Boolean);
+        // Vue.set(Validator[key],'success',Boolean);
+        // Vue.set(Validator[key],'message',Boolean ? '' : msg);
         Validator[key].error = !Boolean;
         Validator[key].success = Boolean;
-        Validator[key].message = Boolean ? '' : msg
+        Validator[key].message = Boolean ? '' : msg;
     }
 }
