@@ -5,28 +5,40 @@ const path = require('path');
 const rollup = require('rollup');
 const buble = require('rollup-plugin-buble');
 const replace = require('rollup-plugin-replace');
+const babel = require('rollup-plugin-babel');
 const version = process.env.VERSION || require('../package.json').version;
+const banner =
+    `/**
+ * vue-validate v${version}
+ * (c) ${new Date().getFullYear()} Bingo Yang
+ * @license MIT
+ */`;
 
 
 const resolve = _path => path.resolve(__dirname,'../',_path);
 
 const configs = {
-    'umdDev':{
+    umdDev:{
         input:resolve('src/index.js'),
         file:resolve('dist/vue-validate.js'),
         format:'umd',
         env:'development'
     },
-    'umdProd':{
+    umdProd:{
         input:resolve('src/index.js'),
         file:resolve('dist/vue-validate.min.js'),
         format:'umd',
         env:'production'
     },
-    'commonjs':{
+    commonjs:{
         input:resolve('src/index.js'),
         file:resolve('dist/vue-validate.common.js'),
         format:'cjs',
+    },
+    esm: {
+        input: resolve('src/index.esm.js'),
+        file: resolve('dist/vue-validate.esm.js'),
+        format: 'es'
     }
 };
 
@@ -38,17 +50,21 @@ function getConfig(opts) {
                 replace({
                     __VERSION__:version
                 }),
-                buble()
+                buble(),
+                // babel({
+                //     exclude: path.resolve(__dirname, "../node_modules")
+                // })
             ]
         },
         output:{
             file:opts.file,
             format:opts.format,
-            name:'vue-validate'
+            name:'vue-validate',
+            banner
         }
     };
     if(opts.env){
-        config.input.unshift(replace({
+        config.input.plugins.unshift(replace({
             'process.env.NODE_ENV':JSON.stringify(opts.env)
         }))
     }
