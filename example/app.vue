@@ -17,6 +17,9 @@
         methods:{
             changeName(ev){
                 this.$validator.validate('title',this.title);
+                if(this.$validator.title.success){
+                    console.log('执行验证后续逻辑')
+                }
             }
         }
     }

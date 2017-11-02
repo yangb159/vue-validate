@@ -14,6 +14,32 @@ export function Required(value, key, Validator) {
     }
 }
 
+export function MaxLength(value,key,max,Validator) {
+    let len = toString(value).length;
+    if (len <= max) {
+        setStatus(Validator,key);
+        return true
+    } else {
+        let _message = Validator._message[key].maxLength;
+        let msg = replaceAll(_message, {maxLength: max});
+        setStatus(Validator,key,false,msg);
+        return false
+    }
+}
+
+export function MinLength(value,key,min,Validator) {
+    let len = toString(value).length;
+    if (len >= min) {
+        setStatus(Validator,key);
+        return true
+    } else {
+        let _message = Validator._message[key].minLength;
+        let msg = replaceAll(_message, {minLength: min});
+        setStatus(Validator,key,false,msg);
+        return false
+    }
+}
+
 export function RangeLength(value, key, min, max, Validator) {
     let len = toString(value).length;
     if (len >= min && len <= max) {

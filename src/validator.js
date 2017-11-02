@@ -3,7 +3,7 @@
  */
 import {forEachValue, isEmptyObj} from './utils'
 import applyMixin from './mixin'
-import {Required, RangeLength} from './validateHandler'
+import {Required, RangeLength,MaxLength,MinLength} from './validateHandler'
 
 let Vue;
 export class Validator {
@@ -45,7 +45,9 @@ export class Validator {
         this.validate = function boundValidate(key,val) {
             return validate.call(validator,key,val)
         };
-
+        this.validateAll = function boundValidateAll(key,val) {
+            return validateAll.call(validator,key,val)
+        };
     }
 
 
@@ -56,11 +58,21 @@ export class Validator {
         if (re && rule.required) {
             re = Required(val, key, this);
         }
-        if (re && (rule.maxLength > 0 || rule.minLength > 0)) {
+        if (re && rule.maxLength > 0 && rule.minLength > 0) {
             let {maxLength = 1, minLength = 1} = rule;
             re = RangeLength(val, key, minLength, maxLength, this);
+        }else if(re && rule.maxLength > 0){
+            let {maxLength} = rule;
+            re = MaxLength(val, key, maxLength, this);
+        }else if(re && rule.minLength > 0){
+            let {minLength} = rule;
+            re = MinLength(val, key, minLength, this);
         }
-        const validator = this;
+
+
+        if(re&& rule.custom&& typeof rule.custom ==='function'){
+            rule.custom.call(this,val,key)
+        }
 
     }
 
@@ -72,9 +84,7 @@ export class Validator {
 
     }
 
-    subscribe (fn) {
-        return genericSubscribe(fn, this._subscribers)
-    }
+
 
 }
 
