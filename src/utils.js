@@ -6,6 +6,10 @@ export function isObject(obj) {
     return obj !== null && typeof obj === 'object'
 }
 
+export function isNumber(num) {
+    return num !== null && !isNaN(num)
+}
+
 export function isEmptyObj(obj) {
     for (let i in obj) {
         return false

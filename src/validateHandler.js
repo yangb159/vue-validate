@@ -46,10 +46,34 @@ export function RangeLength(value, key, min, max, Validator) {
         setStatus(Validator,key);
         return true
     } else {
-        let _message = len >= min
-            ? Validator._message[key].maxLength
-            : Validator._message[key].minLength;
+        let _message = Validator._message[key].rangeLength;
         let msg = replaceAll(_message, {minLength: min, maxLength: max});
+        setStatus(Validator,key,false,msg);
+        return false
+    }
+}
+
+export function MaxNumber(value,key,max,Validator) {
+    let val = toNumber(value);
+    if (val <= max) {
+        setStatus(Validator,key);
+        return true
+    } else {
+        let _message = Validator._message[key].max;
+        let msg = replaceAll(_message, {max: max});
+        setStatus(Validator,key,false,msg);
+        return false
+    }
+}
+
+export function MinNumber(value,key,min,Validator) {
+    let val = toNumber(value);
+    if (val >= min) {
+        setStatus(Validator,key);
+        return true
+    } else {
+        let _message = Validator._message[key].max;
+        let msg = replaceAll(_message, {max: min});
         setStatus(Validator,key,false,msg);
         return false
     }

@@ -1,9 +1,9 @@
 /**
  * Created by yangbing on 2017/10/30.
  */
-import {forEachValue, isEmptyObj} from './utils'
+import {forEachValue, isEmptyObj,isNumber} from './utils'
 import applyMixin from './mixin'
-import {Required, RangeLength,MaxLength,MinLength} from './validateHandler'
+import {Required, RangeLength,MaxLength,MinLength,MaxNumber,MinNumber,RangeNumber} from './validateHandler'
 
 let Vue;
 export class Validator {
@@ -58,6 +58,7 @@ export class Validator {
         if (re && rule.required) {
             re = Required(val, key, this);
         }
+
         if (re && rule.maxLength > 0 && rule.minLength > 0) {
             let {maxLength = 1, minLength = 1} = rule;
             re = RangeLength(val, key, minLength, maxLength, this);
@@ -70,9 +71,23 @@ export class Validator {
         }
 
 
+        if(re && isNumber(rule.min) && isNumber(rule.max)){
+            let {min,max} = rule;
+            re = RangeNumber(val, key, min, max, this);
+        }else if(re && isNumber(rule.min)){
+            let {min} = rule;
+            re = MinNumber(val, key, min, this);
+        }else if(re && isNumber(rule.max)){
+            let {max} = rule;
+            re = MaxNumber(val, key, max, this);
+        }
+
+
         if(re&& rule.custom&& typeof rule.custom ==='function'){
             rule.custom.call(this,val,key)
         }
+
+        return re
 
     }
 
@@ -92,10 +107,12 @@ function getDefaultMessage(opts) {
     let {defaultMessage} = opts;
     const _defaultMessage = {
         required: '该项为必填项',
-        maxLength: '请输入{minLength}-{maxLength}个字符',
-        minLength: '请输入{minLength}-{maxLength}个字符',
-        max: '请输入{min}-{max}之间的数值',
-        min: '请输入{min}-{max}之间的数值',
+        maxLength: '最多输入{maxLength}个字符',
+        minLength: '最少输入{minLength}个字符',
+        rangeLength: '请输入{minLength}-{maxLength}个字符',
+        max: '请输入小于{max}的数值',
+        min: '请输入大于{min}的数值',
+        rangeNumber: '请输入{min}-{max}之间的数值',
         cellphone: '请输入正确的手机号',
         email: '请输入正确格式的电子邮件',
         regexp: '您输入的格式不正确',
