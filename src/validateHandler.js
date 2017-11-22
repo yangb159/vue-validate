@@ -93,3 +93,14 @@ export function RangeNumber(value, key, min, max, Validator) {
         return false
     }
 }
+
+export function Cellphone(value, key, Validator) {
+    if (/^1[0-9]{10}$/.test(trim(value))) {
+        setStatus(Validator,key);
+        return true
+    } else {
+        let msg = Validator._message[key].cellphone || '';
+        setStatus(Validator,key,false,msg);
+        return false
+    }
+}

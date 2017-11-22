@@ -1,11 +1,21 @@
 /**
  * Created by yangbing on 2017/10/30.
  */
-import {forEachValue, isEmptyObj,isNumber} from './utils'
+import {forEachValue, isEmptyObj, isNumber} from './utils'
 import applyMixin from './mixin'
-import {Required, RangeLength,MaxLength,MinLength,MaxNumber,MinNumber,RangeNumber} from './validateHandler'
+import {
+    Required,
+    RangeLength,
+    MaxLength,
+    MinLength,
+    MaxNumber,
+    MinNumber,
+    RangeNumber,
+    Cellphone
+} from './validateHandler'
 
 let Vue;
+
 export class Validator {
     constructor(opts = {}) {
         //Auto install Vue
@@ -38,15 +48,15 @@ export class Validator {
             });
 
             //bind instance of vue to be reactive
-            this._watcherVM = new Vue({data:{$$validator:validator}});
+            this._watcherVM = new Vue({data: {$$validator: validator}});
         }
         const {validate, validateAll} = this;
 
-        this.validate = function boundValidate(key,val) {
-            return validate.call(validator,key,val)
+        this.validate = function boundValidate(key, val) {
+            return validate.call(validator, key, val)
         };
-        this.validateAll = function boundValidateAll(key,val) {
-            return validateAll.call(validator,key,val)
+        this.validateAll = function boundValidateAll(key, val) {
+            return validateAll.call(validator, key, val)
         };
     }
 
@@ -62,29 +72,33 @@ export class Validator {
         if (re && rule.maxLength > 0 && rule.minLength > 0) {
             let {maxLength = 1, minLength = 1} = rule;
             re = RangeLength(val, key, minLength, maxLength, this);
-        }else if(re && rule.maxLength > 0){
+        } else if (re && rule.maxLength > 0) {
             let {maxLength} = rule;
             re = MaxLength(val, key, maxLength, this);
-        }else if(re && rule.minLength > 0){
+        } else if (re && rule.minLength > 0) {
             let {minLength} = rule;
             re = MinLength(val, key, minLength, this);
         }
 
 
-        if(re && isNumber(rule.min) && isNumber(rule.max)){
-            let {min,max} = rule;
+        if (re && isNumber(rule.min) && isNumber(rule.max)) {
+            let {min, max} = rule;
             re = RangeNumber(val, key, min, max, this);
-        }else if(re && isNumber(rule.min)){
+        } else if (re && isNumber(rule.min)) {
             let {min} = rule;
             re = MinNumber(val, key, min, this);
-        }else if(re && isNumber(rule.max)){
+        } else if (re && isNumber(rule.max)) {
             let {max} = rule;
             re = MaxNumber(val, key, max, this);
         }
 
+        if (re && rule.cellphone) {
+            re = Cellphone(val, key, this);
+        }
 
-        if(re&& rule.custom&& typeof rule.custom ==='function'){
-            rule.custom.call(this,val,key)
+
+        if (re && rule.custom && typeof rule.custom === 'function') {
+            rule.custom.call(this, val, key)
         }
 
         return re
@@ -98,7 +112,6 @@ export class Validator {
     config(key, value) {
 
     }
-
 
 
 }
